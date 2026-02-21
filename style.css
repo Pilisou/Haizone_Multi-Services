@@ -18,7 +18,8 @@ header { background: var(--nwa-header); border-bottom: 1px solid #333; position:
 .location { color: var(--gold); font-size: 12px; font-weight: bold; cursor: pointer; }
 
 /* Search */
-.search-row { padding: 0 5% 15px 5%; }
+.search-row { padding: 0 5% 10px 5%; 
+margin-top: -20px;}
 .search-box { display: flex; background: #fff; border-radius: 10px; overflow: hidden; height: 40px; }
 .search-box input { flex: 1; border: none; padding: 0 15px; font-size: 16px; outline: none; }
 .search-box button { background: var(--gold); border: none; width: 50px; cursor: pointer; }
