@@ -36,6 +36,7 @@ width: 100%;}
     #0d1221 50%, #050505 100%);
     padding: 20px 5% 0 5%;
     text-align: center;
+    min-height: 85vh;
 }
 .hero-subtitle { color: var(--gold); letter-spacing: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; }
 .hero-title.gradient-text { 
