@@ -79,7 +79,7 @@ width: 100%;}
 .gold { color: var(--gold); }
 
 /* Section blan anba a */
-.kategori-section { padding: 80px 5%; background: #fff; text-align: center; color: #000; }
+.kategori-section { padding: 80px 5%; background: #fff; text-align: center; color: #3a3434; }
 
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(40px); }
@@ -138,4 +138,358 @@ transition: opacity 1.5s ease-in-out;
     60% {
         transform: translateX(-50%) translateY(-5px);
     }
+}
+
+
+
+/* Modal*/
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(202, 202, 202, 0.8);
+    backdrop-filter: blur(15px);
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+/* Bwat la - Clean & Minimalist */
+.modal-kontni {
+    background: #bd9f9f;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;
+    max-width: 400px;
+    border-radius: 32px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 40px 100px rgba(170, 147, 147, 0.8);
+}
+
+/* Galeri ti foto yo (Scroll horizontal) */
+.galeri-ti-foto {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+    overflow-x: auto;
+    padding: 5px;
+    scrollbar-width: none; /* Kache scrollbar sou Firefox */
+}
+.galeri-ti-foto::-webkit-scrollbar { display: none; } /* Kache scrollbar sou Chrome */
+
+.galeri-ti-foto img {
+    width: 65px; height: 65px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    background: #b6b5b5;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Bouton Premium */
+#btn-final-achte {
+    background: #fff; /* Blan olye de lò pou n chanje style la */
+    color: #080808;
+    border: none;
+    width: 100%;
+    padding: 20px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#btn-final-achte:active { transform: scale(0.96); }
+
+/* Kontni modal la pou l pa depase ekran */
+.modal-kontni {
+    background: #cac2c2;
+    width: 95%;
+    max-width: 420px;
+    max-height: 90vh; /* Pa depase 90% wotè ekran an */
+    border-radius: 30px;
+    padding: 20px;
+    overflow-y: auto; /* Scroll si kontni an twòp */
+    border: 1px solid #ccbfbf;
+}
+
+/* Gwo imaj la */
+.main-img {
+    width: 100%;
+    height: 270px;
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: 20px;
+    margin-top: -20px;
+}
+
+/* Galeri ti foto yo */
+.galeri-ti-foto {
+    display: flex;
+    gap: 5px;
+    margin: 1px 0;
+    overflow-x: auto; /* Pèmèt scroll horizontal sou mobil */
+    justify-content: center;
+    padding-bottom: 5px;
+}
+/* pou louvri modal*/
+.thumb-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid #333;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.thumb-img:hover { border-color: gold; }
+
+/* Seksyon tèks ak bouton */
+.info-seksyon h3 { color: white; margin: 10px 0 5px; font-size: 1.0rem; margin-top: -5px;}
+.info-seksyon p { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+
+.footer-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #504e4e;
+    padding: 15px;
+    border-radius: 20px;
+}
+
+.pri-tag { color: gold; font-size: 1.8rem; font-weight: 900; }
+
+#btn-final-achte {
+    background: rgb(241, 209, 22);
+    color: rgb(5, 5, 5);
+    border: none;
+    padding: 2px 2px;
+    border-radius: 12px;
+    font-weight: 50;
+    cursor: pointer;
+}
+
+/*pou grid-card yo*/
+/* 1. KONTENÈ PWODWI YO */
+#lis-pwodwi-dinamik {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,
+    minmax(150px, 1fr));
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 2px;
+    width: 100%;
+}
+
+/*Pou ti ekran*/
+@media (max-width:600px) {
+    #lis-pwodwi-dinamik {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 8px;
+    }
+}
+
+
+/* 2. KAT PWODWI A (FIXED SIZE) */
+.pwodwi-card {
+    background: #3a3232;
+    border: 1px solid #222;
+    border-radius: 24px;
+    padding: 7px;
+    width: 150px;
+    height: 270px; /* Wotè fiks pou tout kat yo menm jan */
+    position: relative;
+    overflow: hidden; /* Pou rido a ka kache anlè */
+    display: flex;
+    flex-direction: column;
+    transition: all 0.1s ease;
+    position: relative;
+}
+
+.pwodwi-card:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+/* 3. TI FLÈCH V K AP DANSE A */
+.ti-flech-v {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    color: gold;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 20; /* Pi wo pase rido a */
+    padding: 5px;
+    animation: danse 1.5s infinite ease-in-out;
+}
+
+@keyframes danse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); } /* Li moute desann */
+}
+
+/* 4. RIDO DESKRIPSYON AN (OVERLAY) */
+.deskrip-overlay {
+    position: absolute;
+    top: -100%; /* Kache anlè nèt */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(148, 139, 139, 0.96);
+    color: white;
+    padding: 50px 20px;
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none; /* Sa pèmèt ou klike sou foto anba l lè l kache */
+}
+
+/* Lè rido a louvri ak JS */
+.deskrip-overlay.active {
+    top: 0;
+    pointer-events: auto; /* Li vin ka klike kounye a */
+}
+
+/* 5. IMAJ AK TI FOTO YO */
+.foto-prensipal {
+    width: 100%;
+    height: 140px;
+    object-fit: contain; /* Pou foto a pa janm defòme */
+    background: #817777;
+    border-radius: 18px;
+    cursor: pointer;
+}
+
+.ti-foto-galeri {
+    display: flex;
+    gap: 2px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.ti-foto-galeri img {
+    width: 35px;
+    height: 42px;
+    background: white; 
+    padding: 2px;
+    border-radius: 9px;
+    object-fit: contain;
+    border: 2px solid #3596e0;
+    cursor: pointer;
+}
+
+/* 6. NON PWODWI AK PRI */
+.enfos-pwodwi {
+    margin-top: 10px;
+    flex-grow: 1;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.non-pwodwi {
+    font-size: 0.75rem;
+    font-weight:70;
+    color: white;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pri-seksyon {
+    margin-top: 3px;
+    gap: 5px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    
+}
+
+.pri-rabe {
+    color: rgb(247, 246, 246);
+    font-size: 0.9rem;
+    font-weight: 700px;
+    text-align: center;
+}
+
+.pri-original {
+    color: #f00000;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+    margin-left: 2px;
+    opacity: 1.9;
+}
+
+/* M mete sa pou bouton like la*/
+.kontene-like {
+    position: absolute; /* Sa enpòtan pou l ka flote nan kwen an */
+    bottom: 2px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.3); /* Yon ti fon nwa transparan */
+    padding: 2px 8px;
+    border-radius: 12px;
+    z-index: 10;
+}
+
+.ti-ke {
+    font-size: 1rem;
+    color: #666;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chif-like {
+    font-size: 0.75rem;
+    color: white;
+    font-weight: bold;
+}
+
+@keyframes bat-ke {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1.2); }
+}
+
+.ti-ke.active {
+    color: #da9009 !important;
+    animation: bat-ke 0.3s ease-in-out; 
+}
+.etiket-temu {
+    position: absolute;
+    bottom: -8px; /* Sa fè l desann nan pye ronn jòn nan */
+    left: 50%;
+    transform: translateX(-50%); /* Pou l toujou rete nan mitan */
+    background-color: #28a745; /* Koulè vèt Temu an (oswa #ff4500 si w vle wouj) */
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    border: 1px solid white; /* Ti liy blan an pou l parèt dekole */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+#panye-fiks {
+    /* Rès kòd ou te genyen an... */
+    animation: dansePanye 3s infinite ease-in-out;
+}
+
+@keyframes dansePanye {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1) rotate(15deg); } 
+    100% { transform: scale(1); }
 }
