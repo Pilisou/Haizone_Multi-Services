@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="hc">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Haizone | Detay Pwodwi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body { background-color: #0a0a0a; color: white; padding-bottom: 50px; }
+
+        /* Header */
+        .header-paj { display: flex; align-items: center; padding: 15px 20px; background: #111; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
+
+
+        .btn-retou { background: none; border: 1px solid gold; color: gold; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+
+        /* Layout Prensipal */
+        .paj-detay-kontene { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+
+        .seksyon-prensipal { display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px; }
+
+        /* Foto ak Ti Kare */
+        .blok-foto { flex: 1.2; min-width: 320px; }
+
+        .kare-foto-prensipal { background: #151515; border-radius: 20px; padding: 25px; display: flex; justify-content: center; align-items: center; min-height: 350px; }
+
+
+        #foto-prensipal-detay { max-width: 100%; max-height: 400px; border-radius: 10px; object-fit: contain; }
+        
+        .galeri-kare-detay { display: flex; gap: 12px; margin-top: 20px; justify-content: center; overflow-x: auto; padding: 10px 0; }
+
+        .galeri-kare-detay img { width: 70px; height: 70px; object-fit: cover; border-radius: 10px; border: 2px solid #333; cursor: pointer; transition: 0.3s; }
+
+        .galeri-kare-detay img:hover { border-color: gold; transform: scale(1.05); }
+
+        /* Enfòmasyon (Style Amazon) */
+        .blok-enfos { flex: 1; min-width: 320px; }
+
+        #non-detay { font-size: 2rem; margin-bottom: 15px; line-height: 1.2; }
+        
+        .deskripsyon-anle { background: #151515; padding: 20px; border-radius: 15px; margin-bottom: 25px; border-left: 5px solid gold; }
+
+
+        .deskripsyon-anle h3 { font-size: 1rem; color: gold; margin-bottom: 8px; text-transform: uppercase; }
+
+        .deskripsyon-anle p { color: #ccc; line-height: 1.5; font-size: 0.95rem; }
+
+        .pri-detay { margin: 25px 0; }
+
+        .pri-lo { color: gold; font-size: 2.5rem; font-weight: 900; }
+
+        .pri-bare { color: #ff4d4d; text-decoration: line-through; margin-left: 15px; font-size: 1.2rem; opacity: 0.7; }
+
+
+        .info-livrezon-box {
+    background: linear-gradient(90deg, #1a1a1a, #262626); /* Yon nwa ki gen klas */
+    border-left: 4px solid #FFD700; /* Ti liy lò a pou match ak rès sit la */
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+
+.kontni-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.machin-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 5px #FFD700); /* Pou fè machin nan briye ti kras */
+}
+
+.tèks-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.tèks-info strong {
+    color: #FFD700; /* Tit la an lò */
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+.tèks-info span {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+
+        .btn-panyen { background: white; color: black; border: none; padding: 18px; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1rem; }
+
+       #lis-menm-kategori {
+    display: grid !important;
+    /* Lòd majik la: 2 kolòn sou telefòn, otomatik sou laptop */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+    gap: 15px;
+    padding: 10px;
+    width: 100%;
+}
+
+/* Stil pou chak ti kat pwodwi ki anba a */
+.pwodwi-card {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #333;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Pou foto yo parèt menm nivo epi pwòp */
+.foto-kategori {
+    width: 100%;
+    height: 140px;
+    object-fit: contain; /* Sa anpeche foto a koupe oswa kraze */
+    margin-bottom: 8px;
+    background: #000;
+    border-radius: 8px;
+}
+
+
+/* Style pou ti kè a */
+.ke-kategori {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: #555; /* Gri lè l pa klike */
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 10;
+}
+
+/* Koulè kè a lè l klike (Active) */
+.ke-kategori.active {
+    color: #ff4757; /* Wouj vibran */
+    transform: scale(1.2);
+}
+
+/* 3 ti pwen pou non ki twò long */
+.non-kategori {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    font-size: 0.85rem;
+    color: #fff;
+    margin: 8px 0 4px 0;
+}
+
+/* Style pou bwat pri a */
+.pri-box-kategori {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+}
+
+.pri-rabe-kategori {
+    color: #FFD700;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.pri-old-kategori {
+    color: #ff4d4d; /* Wouj menm jan ak nan foto a */
+    text-decoration: line-through;
+    font-size: 0.85rem;
+    opacity: 2.8;
+}
+
+.etiket-temu {
+    position: absolute;
+    bottom: -8px; /* Sa fè l desann nan pye ronn jòn nan */
+    left: 50%;
+    transform: translateX(-50%); /* Pou l toujou rete nan mitan */
+    background-color: #28a745; /* Koulè vèt Temu an (oswa #ff4500 si w vle wouj) */
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    border: 1px solid white; /* Ti liy blan an pou l parèt dekole */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#panye-fiks {
+    /* Rès kòd ou te genyen an... */
+    animation: dansePanye 3s infinite ease-in-out;
+}
+
+@keyframes dansePanye {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1) rotate(15deg); } 
+    100% { transform: scale(1); }
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="header-paj">
+        <button onclick="window.location.href='index.html'" class="btn-retou">← Tounen nan Boutik la</button>
+    </div>
+
+    <main class="paj-detay-kontene">
+        <div class="seksyon-prensipal">
+            <div class="blok-foto">
+                <div class="kare-foto-prensipal">
+                    <img id="foto-prensipal-detay" src="loading.gif" alt="">
+                </div>
+                <div id="galeri-kare" class="galeri-kare-detay"></div>
+            </div>
+
+            <div class="blok-enfos">
+                <h1 id="non-detay">Chaje...</h1>
+                <div class="deskripsyon-anle">
+                    <h3>Pwofil Pwodwi</h3>
+                    <p id="deskrip-detay">Chaje deskripsyon an...</p>
+                </div>
+                <div class="pri-detay">
+                    <span id="pri-rabe-detay" class="pri-lo"></span>
+                    <span id="pri-old-detay" class="pri-bare"></span>
+                </div>
+                <div class="info-livrezon-box">
+    <div class="kontni-info">
+        <span class="machin-icon">🚚</span>
+        <div class="tèks-info">
+            <strong>Livrezon Limite</strong>
+            <span>Disponib pou Ansagalè sèlman</span>
+        </div>
+    </div>
+</div>
+                <button class="btn-panyen" id="ajoute-panyen">Ajoute nan panyen</button>
+            </div>
+        </div>
+
+        <section class="seksyon-kategori">
+            <h2 class="tit-kategori">Pwodwi ki sanble</h2>
+            <div id="lis-menm-kategori" class="grid-kategori"></div>
+        </section>
+    </main>
+
+
+    <div id="panye-fiks" onclick="ouvriPanyen()" style="position:fixed; bottom:20px; right:20px; background:#FFD700; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index:1000;">
+    <i class="fas fa-shopping-basket" style="font-size:24px; color:#000;"></i>
+    <span id="panye-badge" style="position:absolute; top:0; right:0; background:red; color:white; border-radius:50%; padding:2px 7px; font-size:12px; font-weight:bold; display:none;">0</span>
+    <span class="etiket-temu">Livrezon Limite!</span>
+</div>
+
+<div id="modal-panyen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:#1a1a1a; width:90%; max-width:400px; padding:20px; border-radius:15px; border:1px solid #FFD700; color:white;">
+        <h3 style="text-align:center; border-bottom:1px solid #333; padding-bottom:10px;">Panye w la</h3>
+        <div id="lis-panyen" style="max-height:300px; overflow-y:auto; margin:15px 0;"></div>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-top:10px;">
+            <span>TOTAL:</span>
+            <span id="total-live">$0</span>
+        </div>
+        <button onclick="voyeWhatsAppPro()" style="width:100%; background:#25D366; color:white; border:none; padding:12px; border-radius:8px; margin-top:15px; font-weight:bold; cursor:pointer;">Kòmande sou WhatsApp</button>
+        <button onclick="fèmenPanye()" style="width:100%; background:transparent; color:#aaa; border:none; margin-top:10px; cursor:pointer;">Kontinye achte</button>
+    </div>
+</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAPX2vLomJjA5taIsBhPz2WrENIcffYsDE",
+  authDomain: "haizones.firebaseapp.com",
+  databaseURL: "https://haizones-default-rtdb.firebaseio.com",
+  projectId: "haizones",
+  storageBucket: "haizones.appspot.com",
+  messagingSenderId: "100455950809",
+  appId: "1:100455950809:web:97fe90e664b26c7abc51c8"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+        // Isit la nou pral trape done yo nan LocalStorage oswa Firebase apre sa
+        const params = new URLSearchParams(window.location.search);
+        const pwodwiId = params.get('id');
+
+        // Pou kounye a n ap simule chajman an
+        console.log("M ap chèche pwodwi ID: " + pwodwiId);
+        
+        // 1. Nou rekipere lis la nan localStorage menm jan ansyen modal la te fè l la
+onValue(ref(db, 'lisPwodwi'), (snapshot) => {
+    const doneYo = snapshot.val();
+    const lis = Object.keys(doneYo).map(id => ({ id: id, ...doneYo[id] }));
+    var p = lis.find(i => i.id == pwodwiId);
+    if (p) {
+            window.p = p;
+if (p) {
+    // Mete non pwodwi a
+    document.getElementById('non-detay').innerText = p.non;
+    
+    // Mete foto prensipal la
+    document.getElementById('foto-prensipal-detay').src = p.foto[0];
+    
+    // Mete deskripsyon an (Pwofil Pwodwi)
+    document.getElementById('deskrip-detay').innerText = p.deskripsyon || "Pwodwi Haizone edisyon limite.";
+    
+    // Mete pri yo (Rabe ak Original)
+    document.getElementById('pri-rabe-detay').innerText = '$' + p.pri;
+    document.getElementById('pri-old-detay').innerText = '$' + (p.pri * 1.2).toFixed(0);
+
+    // Bati ti kare foto yo (Galeri)
+    let galeriHTML = "";
+    if (p.foto && p.foto.length > 0) {
+        for (var i = 0; i < p.foto.length; i++) {
+            galeriHTML += '<img src="' + p.foto[i] + '" onclick="document.getElementById(\'foto-prensipal-detay\').src=\'' + p.foto[i] + '\'">';
+        }
+    }
+    document.getElementById('galeri-kare').innerHTML = galeriHTML;
+
+    // Lojik pou pwodwi ki sanble (Kategori)
+    var lisKategori = lis.filter(function(item) { 
+        return item.kategori === p.kategori && item.id !== p.id; 
+    });
+    
+    var kontniKat = "";
+
+lisKategori.forEach(function(item) {
+    // Nou kalkile pri original la (pri off) menm jan ak nan vitrin nan
+    var priOld = (item.pri * 1.2).toFixed(0);
+
+    kontniKat += `
+        <div class="pwodwi-card">
+            <div class="ke-kategori" onclick="this.classList.toggle('active')">❤</div>
+            
+            <img src="${item.foto[0]}" class="foto-kategori" onclick="window.location.href='pwodwi.html?id=${item.id}'">
+            
+            <h4 class="non-kategori">${item.non}</h4>
+            
+            <div class="pri-box-kategori">
+                <span class="pri-rabe-kategori">$${item.pri}</span>
+                <span class="pri-old-kategori">$${priOld}</span>
+            </div>
+        </div>`;
+});
+
+    document.getElementById('lis-menm-kategori').innerHTML = kontniKat;
+}
+    }
+});
+    </script>
+
+
+<script>
+// 1. Fonksyon pou louvri/fèmen
+function ouvriPanyen() {
+    document.getElementById('modal-panyen').style.display = 'flex';
+    rannPanyen();
+}
+function fèmenPanye() {
+    document.getElementById('modal-panyen').style.display = 'none';
+}
+
+// 2. Fonksyon pou chif wouj la (Li rele updateBadge tankou nan Index)
+function updateBadge() {
+    var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
+    var badge = document.getElementById('panye-badge');
+    if (badge) {
+        badge.innerText = panyen.length;
+        badge.style.display = panyen.length > 0 ? "block" : "none";
+    }
+}
+
+// 3. Afiche atik yo nan Modal la
+function rannPanyen() {
+    var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
+    var lisHTML = document.getElementById('lis-panyen');
+    var totalHTML = document.getElementById('total-live');
+    var total = 0;
+    var kontni = "";
+
+    panyen.forEach(function(item, index) {
+        total += parseFloat(item.pri);
+        kontni += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">
+                <div>
+                    <p style="margin:0; font-size:14px;">${item.non}</p>
+                    <p style="margin:0; color:#FFD700;">$${item.pri}</p>
+                </div>
+                <button onclick="retireAtik(${index})" style="background:none; border:none; color:red; cursor:pointer; font-size:18px;">✕</button>
+            </div>`;
+    });
+
+    if(lisHTML) lisHTML.innerHTML = kontni || "<p style='text-align:center;'>Panyen an vid</p>";
+    if(totalHTML) totalHTML.innerText = "$" + total;
+}
+
+// 4. Retire atik epi rafrechi chif la
+function retireAtik(index) {
+    var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
+    panyen.splice(index, 1);
+    localStorage.setItem('panyen', JSON.stringify(panyen));
+    rannPanyen();
+    updateBadge(); // Sa a rafrechi chif wouj la tou de paj yo
+}
+
+// 5. Bouton "Ajoute nan panyen" nan paj Pwodwi a
+document.getElementById('ajoute-panyen').onclick = function() {
+    if (typeof p !== 'undefined') {
+        var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
+        // Nou sove l egzakteman jan Index la mande l
+        panyen.push({ non: p.non, pri: p.pri }); 
+        localStorage.setItem('panyen', JSON.stringify(panyen));
+        
+        updateBadge();
+        ouvriPanyen();
+    } else {
+        alert("Ere: Done pwodwi a poko chaje.");
+    }
+};
+
+// 6. WhatsApp Pro (Konekte ak nimewo Index la)
+function voyeWhatsAppPro() {
+    var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
+    if (panyen.length === 0) return alert("Panyen an vid!");
+    
+    var mesaj = "Mwen ta renmen kòmande:\n\n";
+    var total = 0;
+    panyen.forEach(function(i) {
+        mesaj += "- " + i.non + " ($" + i.pri + ")\n";
+        total += parseFloat(i.pri);
+    });
+    mesaj += "\n*Total: $" + total + "*";
+    
+    // Nimewo ou te gen nan Index la (50937860226)
+    window.open("https://wa.me/50937860226?text=" + encodeURIComponent(mesaj));
+}
+
+// Lè paj la chaje, nou montre chif la
+window.onload = updateBadge;
+</script>
+</body>
+</html>
