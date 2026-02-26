@@ -444,7 +444,7 @@ function updateBadge() {
     }
 }
 
-// 3. Afiche atik yo nan Modal la
+// 3. Afiche atik yo nan Modal la (Vèsyon ak Kantite)
 function rannPanyen() {
     var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
     var lisHTML = document.getElementById('lis-panyen');
@@ -453,19 +453,26 @@ function rannPanyen() {
     var kontni = "";
 
     panyen.forEach(function(item, index) {
-        total += parseFloat(item.pri);
+        // Nou asire kantite a se yon chif, si li pa la nou ba li 1
+        var kanti = item.kantite || 1;
+        var priLiy = parseFloat(item.pri) * kanti;
+        total += priLiy;
+
         kontni += `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">
                 <div>
-                    <p style="margin:0; font-size:14px;">${item.non}</p>
-                    <p style="margin:0; color:#FFD700;">$${item.pri}</p>
+                    <p style="margin:0; font-size:14px;">${item.non} <b style="color:#FFD700;">(Kantite: ${kanti})</b></p>
+                    <p style="margin:0; font-size:12px; color:#ccc;">Pri inite: $${item.pri}</p>
                 </div>
-                <button onclick="retireAtik(${index})" style="background:none; border:none; color:red; cursor:pointer; font-size:18px;">✕</button>
+                <div style="text-align:right;">
+                    <p style="margin:0; font-weight:bold;">$${priLiy.toFixed(0)}</p>
+                    <button onclick="retireAtik(${index})" style="background:none; border:none; color:red; cursor:pointer; font-size:18px; padding:0;">✕</button>
+                </div>
             </div>`;
     });
 
     if(lisHTML) lisHTML.innerHTML = kontni || "<p style='text-align:center;'>Panyen an vid</p>";
-    if(totalHTML) totalHTML.innerText = "$" + total;
+    if(totalHTML) totalHTML.innerText = "$" + total.toFixed(0);
 }
 
 // 4. Retire atik epi rafrechi chif la
@@ -477,48 +484,59 @@ function retireAtik(index) {
     updateBadge(); // Sa a rafrechi chif wouj la tou de paj yo
 }
 
-// 5. Bouton "Ajoute nan panyen" nan paj Pwodwi a
 document.getElementById('ajoute-panyen').onclick = function() {
-    if (typeof p !== 'undefined') {
+    if (window.p) {
         var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
-        // Nou sove l egzakteman jan Index la mande l
-        panyen.push({ non: p.non, pri: p.pri }); 
+        var qty = parseInt(document.getElementById('display-qty').value) || 1;
+
+        var atikEgziste = panyen.find(function(item) {
+            return item.non === window.p.non;
+        });
+
+        if (atikEgziste) {
+            atikEgziste.kantite = (atikEgziste.kantite || 1) + qty;
+        } else {
+            panyen.push({ 
+                non: window.p.non, 
+                pri: window.p.pri, 
+                kantite: qty 
+            });
+        }
+
         localStorage.setItem('panyen', JSON.stringify(panyen));
-        // 1. Tcheke si gen yon notif ki te la deja, si wi, retire l
-const ansyenNotif = document.querySelector(".ti-notif");
-if (ansyenNotif) ansyenNotif.remove();
+        
+        // --- NOTIFIKASYON KI RANPLASE ALÈT LA ---
+        const bwatNotif = document.createElement("div");
+        bwatNotif.innerText = "✓ " + qty + " " + window.p.non + " ajoute nan panye.";
+        
+        // Style pou li parèt bèl anba ekran an
+        Object.assign(bwatNotif.style, {
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#28a745",
+            color: "white",
+            padding: "12px 20px",
+            borderRadius: "8px",
+            zIndex: "10000",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+            transition: "opacity 0.5s ease"
+        });
 
-// 2. Kreye nouvo a
-const notif = document.createElement("div");
-notif.className = "ti-notif"; // Nou ba l yon non pou n ka jwenn li apre
-notif.innerHTML = "✓ Ou ajoute pwodwi a nan panye w.";
+        document.body.appendChild(bwatNotif);
 
-Object.assign(notif.style, {
-    position: "fixed", 
-    top: "20px", 
-    right: "20px",
-    backgroundColor: "#28a745", 
-    color: "white",
-    padding: "15px 25px", 
-    borderRadius: "8px",
-    zIndex: "9999", 
-    fontWeight: "bold",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-    transition: "opacity 0.5s ease",
-    pointerEvents: "none" // Pou l pa jennen si moun nan vle klike anba l
-});
-
-document.body.appendChild(notif);
-
-// 3. Retire l apre 2 segon
-setTimeout(() => {
-    notif.style.opacity = "0";
-    setTimeout(() => notif.remove(), 500);
-}, 2000);
-        updateBadge();
-
+        // Li disparèt apre 2 segon
+        setTimeout(function() {
+            bwatNotif.style.opacity = "0";
+            setTimeout(function() { bwatNotif.remove(); }, 500);
+        }, 2000);
+        
+        if (typeof updateBadge === 'function') updateBadge();
+        document.getElementById('display-qty').value = "1"; 
     } else {
-        alert("Ere: Done pwodwi a poko chaje.");
+        // Nou ka kite alert sa a sèlman si gen gwo erè chajman
+        console.log("Ere: Done pwodwi a poko chaje.");
     }
 };
 
@@ -539,8 +557,20 @@ function voyeWhatsAppPro() {
     window.open("https://wa.me/50937860226?text=" + encodeURIComponent(mesaj));
 }
 
+window.changeQty = function(val) {
+    const input = document.getElementById('display-qty');
+    if (!input) return; // Sekirite si input la pa la
+    
+    let chif = parseInt(input.value) || 1;
+    let nouvoChif = chif + val;
+
+    if (nouvoChif >= 1) {
+        input.value = nouvoChif;
+    }
+};
 // Lè paj la chaje, nou montre chif la
 window.onload = updateBadge;
+
 </script>
 </body>
 </html>
