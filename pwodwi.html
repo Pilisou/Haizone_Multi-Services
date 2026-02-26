@@ -205,6 +205,44 @@
     100% { transform: scale(1); }
 }
 
+
+/* Kontenè a: Li santre tout bagay epi li bay espas anba */
+.valè-selector-container {
+    display: flex; /* Mete label ak bwat la sou menm liy */
+    align-items: center; /* Santre yo nan wotè */
+    justify-content: flex-start; /* Mete yo nan mitan paj la */
+    gap: 10px; /* Espas ant mo 'Valè' a ak bwat la */
+    margin-bottom: 20px; /* Espas anlè gwo bouton panye a */
+}
+
+/* Style pou mo 'Valè' a */
+.label-valè {
+    color: #ffffff; /* Blan pou l parèt sou fon nwa a */
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Bwat seleksyon an (Style Temu/Amazon) */
+.valè-select {
+    background-color: #f0f2f2; /* Koulè gri klè Amazon/Temu */
+    border: 1px solid #d5d9d9; /* Ti liy gri fen */
+    border-radius: 7px; /* Kwen yon ti jan kase (rektangilè) */
+    padding: 8px 12px; /* Espas anndan an */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 70px; /* Lajè minimòm bwat la */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Yon ti lonbraj lejè */
+}
+
+/* Lè w klike sou li pou chwazi */
+.valè-select:focus {
+    border-color: #ffcc00; /* Liy lan vin lò lè w klike l */
+    outline: none;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -241,6 +279,24 @@
         </div>
     </div>
 </div>
+<div class="valè-selector-container">
+    <label for="display-qty" class="label-valè">Valè</label>
+    <select id="display-qty" class="valè-select">
+        </select>
+</div>
+
+<script>
+    // Bouk pou kreye lis 1 rive 99 otomatikman
+    const selectQty = document.getElementById('display-qty');
+    for (let i = 1; i <= 99; i++) {
+        let option = document.createElement('option');
+        option.value = i;
+        option.innerHTML = i;
+        selectQty.appendChild(option);
+    }
+
+    
+</script>
                 <button class="btn-panyen" id="ajoute-panyen">Ajoute nan panyen</button>
             </div>
         </div>
@@ -417,9 +473,39 @@ document.getElementById('ajoute-panyen').onclick = function() {
         // Nou sove l egzakteman jan Index la mande l
         panyen.push({ non: p.non, pri: p.pri }); 
         localStorage.setItem('panyen', JSON.stringify(panyen));
-        
+        // 1. Tcheke si gen yon notif ki te la deja, si wi, retire l
+const ansyenNotif = document.querySelector(".ti-notif");
+if (ansyenNotif) ansyenNotif.remove();
+
+// 2. Kreye nouvo a
+const notif = document.createElement("div");
+notif.className = "ti-notif"; // Nou ba l yon non pou n ka jwenn li apre
+notif.innerHTML = "✓ Ou ajoute pwodwi a nan panye w.";
+
+Object.assign(notif.style, {
+    position: "fixed", 
+    top: "20px", 
+    right: "20px",
+    backgroundColor: "#28a745", 
+    color: "white",
+    padding: "15px 25px", 
+    borderRadius: "8px",
+    zIndex: "9999", 
+    fontWeight: "bold",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+    transition: "opacity 0.5s ease",
+    pointerEvents: "none" // Pou l pa jennen si moun nan vle klike anba l
+});
+
+document.body.appendChild(notif);
+
+// 3. Retire l apre 2 segon
+setTimeout(() => {
+    notif.style.opacity = "0";
+    setTimeout(() => notif.remove(), 500);
+}, 2000);
         updateBadge();
-        ouvriPanyen();
+
     } else {
         alert("Ere: Done pwodwi a poko chaje.");
     }
