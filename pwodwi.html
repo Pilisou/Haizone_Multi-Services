@@ -206,42 +206,62 @@
 }
 
 
-/* Kontenè a: Li santre tout bagay epi li bay espas anba */
-.valè-selector-container {
-    display: flex; /* Mete label ak bwat la sou menm liy */
+/* Kontenè a: N ap pouse l agoch epi ba l espas */
+.temu-qty-container {
+    display: flex; /* Mete label la ak bwat la sou menm liy */
     align-items: center; /* Santre yo nan wotè */
-    justify-content: flex-start; /* Mete yo nan mitan paj la */
-    gap: 10px; /* Espas ant mo 'Valè' a ak bwat la */
-    margin-bottom: 20px; /* Espas anlè gwo bouton panye a */
+    justify-content: flex-start; /* Pouse tout blòk la AGOCH nèt */
+    gap: 10px; /* Espas ant mo 'Qty' a ak bwat la */
+    margin-bottom: 15px; /* Espas anlè gwo bouton panye a */
+    padding-left: 5px; /* Ti souf sou bò gòch la */
 }
 
-/* Style pou mo 'Valè' a */
-.label-valè {
-    color: #ffffff; /* Blan pou l parèt sou fon nwa a */
-    font-size: 16px;
-    font-weight: 500;
-}
-
-/* Bwat seleksyon an (Style Temu/Amazon) */
-.valè-select {
-    background-color: #f0f2f2; /* Koulè gri klè Amazon/Temu */
-    border: 1px solid #d5d9d9; /* Ti liy gri fen */
-    border-radius: 7px; /* Kwen yon ti jan kase (rektangilè) */
-    padding: 8px 12px; /* Espas anndan an */
+/* Etikèt 'Qty' a */
+.label-qty {
+    color: #000; /* Nwa (ou ka chanje l an blan si fon an nwa) */
     font-size: 16px;
     font-weight: bold;
+}
+
+/* Bwat kontwòl rektangilè a */
+.qty-control {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #d5d9d9; /* Liy gri fen jan nou wè nan foto a */
+    border-radius: 4px; /* Kwen yon ti jan kase (rektangilè) */
+    background-color: #fff;
+    overflow: hidden; /* Pou bouton yo pa depase */
+}
+
+/* Bouton yo (- ak +) */
+.qty-btn {
+    background-color: #f0f2f2; /* Gri klè Amazon/Temu */
+    border: none;
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
-    min-width: 70px; /* Lajè minimòm bwat la */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Yon ti lonbraj lejè */
+    transition: background 0.2s;
 }
 
-/* Lè w klike sou li pou chwazi */
-.valè-select:focus {
-    border-color: #ffcc00; /* Liy lan vin lò lè w klike l */
+.qty-btn:hover {
+    background-color: #e3e6e6; /* Chanje yon ti jan lè w pase sou li */
+}
+
+/* Chif ki nan mitan an */
+#display-qty {
+    width: 45px; /* Lajè kote chif la ye a */
+    text-align: center;
+    border: none;
+    border-left: 1.5px solid #d5d9d9; /* Liy separasyon gòch */
+    border-right: 1.5px solid #d5d9d9; /* Liy separasyon dwat */
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
     outline: none;
+    background: transparent;
 }
-
-
 
     </style>
 </head>
@@ -279,25 +299,16 @@
         </div>
     </div>
 </div>
-<div class="valè-selector-container">
-    <label for="display-qty" class="label-valè">Valè</label>
-    <select id="display-qty" class="valè-select">
-        </select>
+<div class="temu-qty-container">
+    <span class="label-qty">Qty</span> <div class="qty-control">
+        <button type="button" class="qty-btn" onclick="changeQty(-1)">-</button>
+        
+        <input type="text" id="display-qty" value="1" readonly>
+        
+        <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+    </div>
 </div>
-
-<script>
-    // Bouk pou kreye lis 1 rive 99 otomatikman
-    const selectQty = document.getElementById('display-qty');
-    for (let i = 1; i <= 99; i++) {
-        let option = document.createElement('option');
-        option.value = i;
-        option.innerHTML = i;
-        selectQty.appendChild(option);
-    }
-
-    
-</script>
-                <button class="btn-panyen" id="ajoute-panyen">Ajoute nan panyen</button>
+                <button class="btn-panyen" id="ajoute-panyen">Ajoute nan panye w</button>
             </div>
         </div>
 
