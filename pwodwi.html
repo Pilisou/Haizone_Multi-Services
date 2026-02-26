@@ -540,21 +540,40 @@ document.getElementById('ajoute-panyen').onclick = function() {
     }
 };
 
-// 6. WhatsApp Pro (Konekte ak nimewo Index la)
 function voyeWhatsAppPro() {
     var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
     if (panyen.length === 0) return alert("Panyen an vid!");
     
-    var mesaj = "Mwen ta renmen kòmande:\n\n";
-    var total = 0;
-    panyen.forEach(function(i) {
-        mesaj += "- " + i.non + " ($" + i.pri + ")\n";
-        total += parseFloat(i.pri);
-    });
-    mesaj += "\n*Total: $" + total + "*";
+    // Nou deklare emoji yo kòm varyab pou asire yo vwayaje byen
+    var chèk = "\u2705"; // ✅
+    var liy = "\u2501";  // ━
+    var panyenEmoji = "\u203C"; // ‼ oswa sèvi ak yon senp zetwal *
+    var flèch = "\u2570\u2500\u25B6"; // ╰─▶
     
-    // Nimewo ou te gen nan Index la (50937860226)
-    window.open("https://wa.me/50937860226?text=" + encodeURIComponent(mesaj));
+    var mesaj = chèk + "LÒD KONFIMASYON HAIZONE MULTI-SERVICES " + chèk + "\n";
+    mesaj += "━━━━━━━━━━━━━━━━━━━\n\n";
+    
+    var total = 0;
+    
+    panyen.forEach(function(i) {
+        var kanti = i.kantite || 1;
+        var priLiy = parseFloat(i.pri) * kanti;
+        
+        mesaj += "* " + i.non.toUpperCase() + "\n";
+        mesaj += "  " + flèch + " Kantite: " + kanti + " - Pri: $" + priLiy.toFixed(0) + "\n";
+        
+        total += priLiy;
+    });
+    
+    mesaj += "\n━━━━━━━━━━━━━━━━━━━\n";
+    mesaj += "TOTAL POU TOUT ATIK YO: $" + total.toFixed(0) + " USD\n";
+    mesaj += "━━━━━━━━━━━━━━━━━━━\n\n";
+    mesaj += "Haizone Multi-Services/ JHIMMY EDVAR";
+    
+    var nimewo = "50937860226";
+    // Nou itilize encodeURIComponent sou tout mesaj la nèt
+    var url = "https://wa.me/" + nimewo + "?text=" + encodeURIComponent(mesaj);
+    window.open(url);
 }
 
 window.changeQty = function(val) {
