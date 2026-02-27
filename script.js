@@ -50,70 +50,89 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// --- FONKSYON POU MONTRE PWODWI (VÈSYON ULTIMATE) ---
 function montrePwodwi() {
-    // Tcheke si nou gen pwodwi nan memwa a deja
-const kach = localStorage.getItem('lisKach');
-if (kach) {
-    const doneKach = JSON.parse(kach);
-    console.log("M ap montre sa k nan memwa a vit!");
-    // Isit la nou ka kòmanse desine paj la
-}
     var bwat = document.getElementById('lis-pwodwi-dinamik');
     if (!bwat) return;
 
-    // Pon an kòmanse isit la
+    // 1. SKELETON: Si memwa a vid (premye fwa), montre bwat gri yo
+    const kach = localStorage.getItem('lisKach');
+    if (!kach) {
+        var skeletons = "";
+        for (var i = 0; i < 6; i++) { skeletons += '<div class="skeleton-card"></div>'; }
+        bwat.innerHTML = skeletons;
+    } else {
+        // 2. CACHE: Si nou gen done, afiche yo IEDYATMAN
+        desinePwodwiHTML(JSON.parse(kach), bwat);
+        restoreScroll(); 
+    }
+
+    // 3. FIREBASE: Konekte nan background pou rale sa k nèf
     const lisRef = ref(db, 'lisPwodwi');
     onValue(lisRef, (snapshot) => {
         const doneFirebase = snapshot.val();
-        // 2. Sere kopi a nan memwa a (Liy 61 konsa)
-localStorage.setItem('lisKach', JSON.stringify(doneFirebase));
-        var kontni = "";
-
         if (doneFirebase) {
-            // Nou boukle nan done Firebase yo
-            Object.keys(doneFirebase).forEach((key) => {
-                var p = doneFirebase[key];
-                
-                // Nou asire p.id la match ak ID Firebase la pou fonksyon ou yo pa pèdi
-                p.id = key; 
-
-                // --- MEN KOD OU A EGZAKTEMAN JAN L TE YE A ---
-                var tiFotoAtik = '<div class="ti-foto-galeri">';
-                p.foto.slice(0, 4).forEach(function(f) {
-                    tiFotoAtik += '<img src="' + f + '" onclick="chanjeFoto(\'' + p.id + '\', \'' + f + '\', false)">';
-                });
-                tiFotoAtik += '</div>';
-
-                kontni += '<div class="pwodwi-card">' +
-                    '<div class="ti-flech-v" onclick="toggleDeskripsyon(\'' + p.id + '\')">▼</div>' +
-                    
-                    '<div class="deskrip-overlay" id="rido-' + p.id + '" onclick="toggleDeskripsyon(\'' + p.id + '\')">' +
-                        '<h4 style="color:gold;">DESKRIPSYON</h4>' +
-                        '<p>' + (p.deskripsyon || "Enfo disponib byento.") + '</p>' +
-                        '<p style="font-size:0.7rem; margin-top:10px;">(Teke pou fèmen)</p>' +
-                    '</div>' +
-
-                    '<img class="foto-prensipal" id="foto-atik-' + p.id + '" src="' + p.foto[0] + '" onclick="louvriModal(\'' + p.id + '\')">' +
-                    tiFotoAtik + 
-                    '<div class="enfos-pwodwi">' +
-                        '<h3 class="non-pwodwi">' + p.non + '</h3>' +
-                        '<div class="pri-seksyon">' +
-                            '<span class="pri-rabe">$' + p.pri + '</span>' +
-                            '<span class="pri-original">$' + (p.pri * 1.2).toFixed(0) + '</span>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="kontene-like" onclick="event.stopPropagation(); likePwodwi(\'' + p.id + '\')">' +
-                        '<span class="ti-ke" id="ke-' + p.id + '">❤</span>' +
-                        '<span class="chif-like" id="count-' + p.id + '">' + (p.likes || 0) + '</span>' +
-                    '</div>' +
-                '</div>';
-                // --- FIN KOD OU A ---
-            });
-
-            bwat.innerHTML = kontni;
+            localStorage.setItem('lisKach', JSON.stringify(doneFirebase));
+            desinePwodwiHTML(doneFirebase, bwat);
+            restoreScroll(); // Pou l toujou nan bon plas la
         }
     });
 }
+
+// --- MOTÈ KI DESINE HTML LA (Tout fonksyon ou yo anndan l) ---
+function desinePwodwiHTML(doneFirebase, bwat) {
+    var kontni = "";
+    Object.keys(doneFirebase).forEach((key) => {
+        var p = doneFirebase[key];
+        p.id = key; 
+
+        var tiFotoAtik = '<div class="ti-foto-galeri">';
+        p.foto.slice(0, 4).forEach(function(f) {
+            tiFotoAtik += '<img src="' + f + '" loading="lazy" onclick="chanjeFoto(\'' + p.id + '\', \'' + f + '\', false)">';
+        });
+        tiFotoAtik += '</div>';
+
+        kontni += '<div class="pwodwi-card">' +
+            '<div class="ti-flech-v" onclick="toggleDeskripsyon(\'' + p.id + '\')">▼</div>' +
+            '<div class="deskrip-overlay" id="rido-' + p.id + '" onclick="toggleDeskripsyon(\'' + p.id + '\')">' +
+                '<h4 style="color:gold;">DESKRIPSYON</h4>' +
+                '<p>' + (p.deskripsyon || "Enfo disponib byento.") + '</p>' +
+                '<p style="font-size:0.7rem; margin-top:10px;">(Teke pou fèmen)</p>' +
+            '</div>' +
+            '<img class="foto-prensipal" loading="lazy" id="foto-atik-' + p.id + '" src="' + p.foto[0] + '" onclick="louvriModal(\'' + p.id + '\')">' +
+            tiFotoAtik + 
+            '<div class="enfos-pwodwi">' +
+                '<h3 class="non-pwodwi">' + p.non + '</h3>' +
+                '<div class="pri-seksyon">' +
+                    '<span class="pri-rabe">$' + p.pri + '</span>' +
+                    '<span class="pri-original">$' + (p.pri * 1.2).toFixed(0) + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="kontene-like" onclick="event.stopPropagation(); likePwodwi(\'' + p.id + '\')">' +
+                '<span class="ti-ke" id="ke-' + p.id + '">❤</span>' +
+                '<span class="chif-like" id="count-' + p.id + '">' + (p.likes || 0) + '</span>' +
+            '</div>' +
+        '</div>';
+    });
+    bwat.innerHTML = kontni;
+}
+
+// --- KONEKSYON PAJ PWODWI AK MEMWA SCROLL ---
+window.louvriModal = (id) => {
+    localStorage.setItem('scrollPos', window.scrollY); // Sove pozisyon an
+    window.location.href = 'pwodwi.html?id=' + id;     // Pati nan paj la
+};
+
+function restoreScroll() {
+    var pos = localStorage.getItem('scrollPos');
+    if (pos) {
+        window.scrollTo(0, parseInt(pos));
+        // Nou pa efase l isit la pou si moun nan fè reload paj la li toujou la
+    }
+}
+
+// LANSE PWOGRAM NAN
+montrePwodwi();
 
 // Rele fonksyon an
 montrePwodwi();
@@ -124,13 +143,20 @@ window.toggleDeskripsyon = toggleDeskripsyon;
 
 // 4. PANYE (MATCH AK ID panye-badge AK panye-fiks)
 function updateBadge() {
-    var panyeLis = JSON.parse(localStorage.getItem('panye')) || [];
+    // NOU METE 'panyen' AK "N" POU L MATCH AK PAJ PWODWI A
+    var panyeLis = JSON.parse(localStorage.getItem('panyen')) || [];
     var badge = document.getElementById('panye-badge');
+    
     if (badge) {
-        badge.innerText = panyeLis.length;
-        badge.style.display = panyeLis.length > 0 ? 'block' : 'none';
+        // Nou kalkile total inite yo
+        var totalInite = 0;
+        panyeLis.forEach(function(item) {
+            totalInite += (item.kantite || 1);
+        });
+
+        badge.innerText = totalInite;
+        badge.style.display = totalInite > 0 ? 'block' : 'none';
         
-        // Lojik pou l ponpe
         badge.animate([
             { transform: 'scale(1)' },
             { transform: 'scale(1.5)' },
@@ -138,6 +164,8 @@ function updateBadge() {
         ], { duration: 300 });
     }
 }
+// NOU METE SA A POU L RAFRECHI LÈW TOUNEN SOU INDEX
+window.addEventListener('pageshow', updateBadge);
 
 function ouvriPanye() {
     var panyeLis = JSON.parse(localStorage.getItem('panye')) || [];

@@ -276,7 +276,7 @@ transition: opacity 1.5s ease-in-out;
 /*pou grid-card yo*/
 /* 1. KONTENÈ PWODWI YO */
 #lis-pwodwi-dinamik {
-    display: grid;
+    display: grid !important;
     grid-template-columns: repeat(auto-fill,
     minmax(150px, 1fr));
     flex-wrap: wrap;
@@ -492,4 +492,19 @@ transition: opacity 1.5s ease-in-out;
     0% { transform: scale(1); }
     50% { transform: scale(1.1) rotate(15deg); } 
     100% { transform: scale(1); }
+}
+
+.skeleton-card {
+    width: 100%;
+    height: 350px;
+    background: linear-gradient(90deg, #1a1a1a 25%, #333 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: loading-skeleton 1.5s infinite;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+@keyframes loading-skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
