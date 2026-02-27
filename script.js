@@ -35,7 +35,7 @@ function toggleDeskripsyon(id) {
 }
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPX2vLomJjA5taIsBhPz2WrENIcffYsDE",
@@ -86,6 +86,9 @@ function desinePwodwiHTML(doneFirebase, bwat) {
         var p = doneFirebase[key];
         p.id = key; 
 
+        let teLike = localStorage.getItem('like-' + p.id);
+let koulèKè = teLike ? '#ff4d4d' : '#666';
+
         var tiFotoAtik = '<div class="ti-foto-galeri">';
         p.foto.slice(0, 4).forEach(function(f) {
             tiFotoAtik += '<img src="' + f + '" loading="lazy" onclick="chanjeFoto(\'' + p.id + '\', \'' + f + '\', false)">';
@@ -109,7 +112,7 @@ function desinePwodwiHTML(doneFirebase, bwat) {
                 '</div>' +
             '</div>' +
             '<div class="kontene-like" onclick="event.stopPropagation(); likePwodwi(\'' + p.id + '\')">' +
-                '<span class="ti-ke" id="ke-' + p.id + '">❤</span>' +
+                '<span class="ti-ke" id="ke-' + p.id + '" style="color:' + koulèKè + '">❤</span>' +
                 '<span class="chif-like" id="count-' + p.id + '">' + (p.likes || 0) + '</span>' +
             '</div>' +
         '</div>';
@@ -134,73 +137,77 @@ function restoreScroll() {
 // LANSE PWOGRAM NAN
 montrePwodwi();
 
-// Rele fonksyon an
-montrePwodwi();
+
 
 // Mete sa yo apre tout kòd montrePwodwi a fini nèt
 window.chanjeFoto = chanjeFoto;
 window.toggleDeskripsyon = toggleDeskripsyon;
-
-// 4. PANYE (MATCH AK ID panye-badge AK panye-fiks)
+// --- 4. BADGE (Konte KALITE pwodwi: 99 iPhone = 1) ---
 function updateBadge() {
-    // NOU METE 'panyen' AK "N" POU L MATCH AK PAJ PWODWI A
     var panyeLis = JSON.parse(localStorage.getItem('panyen')) || [];
     var badge = document.getElementById('panye-badge');
     
     if (badge) {
-        // Nou kalkile total inite yo
-        var totalInite = 0;
-        panyeLis.forEach(function(item) {
-            totalInite += (item.kantite || 1);
-        });
+        // Lojik ou vle a: Nou jis pran "length" lis la (konbe kalite atik)
+        var totalKalite = panyeLis.length; 
 
-        badge.innerText = totalInite;
-        badge.style.display = totalInite > 0 ? 'block' : 'none';
-        
-        badge.animate([
-            { transform: 'scale(1)' },
-            { transform: 'scale(1.5)' },
-            { transform: 'scale(1)' }
-        ], { duration: 300 });
+        badge.innerText = totalKalite;
+        badge.style.display = totalKalite > 0 ? 'block' : 'none';
+
+        if (totalKalite > 0) {
+            badge.animate([
+                { transform: 'scale(1)' },
+                { transform: 'scale(1.5)' },
+                { transform: 'scale(1)' }
+            ], { duration: 300 });
+        }
     }
 }
-// NOU METE SA A POU L RAFRECHI LÈW TOUNEN SOU INDEX
-window.addEventListener('pageshow', updateBadge);
 
-function ouvriPanye() {
-    var panyeLis = JSON.parse(localStorage.getItem('panye')) || [];
-    var modal = document.getElementById('modal-panye');
-    var lisDiv = document.getElementById('lis-panye');
-    var totalDiv = document.getElementById('total-live');
-    var html = "";
+// --- 5. OUVRI PANYEN (Lojik: Non Pwodwi + Kantite) ---
+function ouvriPanyen() {
+    var panyeLis = JSON.parse(localStorage.getItem('panyen')) || [];
+    var modal = document.getElementById('modal-panyen'); 
+    var lisHTML = document.getElementById('lis-panyen');
+    var totalHTML = document.getElementById('total-live');
+    
     var total = 0;
+    var kontni = "";
 
-    if (panyeLis.length === 0) {
-        html = '<p style="text-align:center; color:#888; padding:20px;">Panye a vid.</p>';
-    } else {
-        panyeLis.forEach(function(item, index) {
-            html += '<div style="display:flex; justify-content:space-between; align-items:center; color:white; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">' +
-                    '<div><b>' + item.non + '</b><br><span style="color:gold;">$' + item.pri + '</span></div>' +
-                    '<i class="fas fa-trash" onclick="retireNanPanye(' + index + ')" style="color:red; cursor:pointer; font-size:18px;"></i>' +
-                    '</div>';
-            total += parseFloat(item.pri);
-        });
-    }
+    panyeLis.forEach(function(item, index) {
+        var kanti = item.kantite || 1;
+        var priLiy = parseFloat(item.pri) * kanti;
+        total += priLiy;
 
-    if (lisDiv) lisDiv.innerHTML = html;
-    if (totalDiv) totalDiv.innerText = '$' + total.toFixed(2);
+        kontni += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #444; padding-bottom:8px; color:white;">
+                <div>
+                    <p style="margin:0; font-size:14px; font-weight:bold;">${item.non}</p>
+                    <p style="margin:0; font-size:13px; color:gold;">Kantite: ${kanti}</p>
+                </div>
+                <div style="text-align:right;">
+                    <p style="margin:0; font-weight:bold;">$${priLiy.toFixed(0)}</p>
+                    <button onclick="retireAtik(${index})" style="background:none; border:none; color:red; cursor:pointer; font-size:18px;">✕</button>
+                </div>
+            </div>`;
+    });
+
+    if (lisHTML) lisHTML.innerHTML = kontni || "<p style='text-align:center; color:#ccc;'>Ajoue kouya pou w pwofite!</p>";
+    if (totalHTML) totalHTML.innerText = "$" + total.toFixed(0);
     if (modal) modal.style.display = 'flex';
 }
 
-
-function retireNanPanye(index) {
-    var panyeLis = JSON.parse(localStorage.getItem('panye')) || [];
-    panyeLis.splice(index, 1); // Sa retire sèlman atik ou klike a
-    localStorage.setItem('panye', JSON.stringify(panyeLis));
-    
-    updateBadge(); // Badge la ap desann
-    ouvriPanye();  // Panye a ap rafrechi pou montre l efase
+// --- 6. RETIRE ATIK ---
+function retireAtik(index) {
+    var panyeLis = JSON.parse(localStorage.getItem('panyen')) || [];
+    panyeLis.splice(index, 1);
+    localStorage.setItem('panyen', JSON.stringify(panyeLis));
+    ouvriPanyen();
+    updateBadge();
 }
+
+updateBadge();
+
 
 // 5. sa ki voye nan paj ki moutre non non pwodwi ak enfo yo
 window.louvriModal = (id) => {
@@ -208,69 +215,79 @@ window.louvriModal = (id) => {
 };
 // 6. FÈMEN (MATCH AK NON FONKSYON KI NAN HTML LA)
 function fèmènModal() { document.getElementById('modal-pwodwi').style.display = 'none'; }
-function fèmenPanye() { document.getElementById('modal-panye').style.display = 'none'; }
+function fèmenPanyen() { document.getElementById('modal-panyen').style.display = 'none'; }
 
 function voyeWhatsAppPro() {
-    var panye = JSON.parse(localStorage.getItem('panye')) || [];
-    if(panye.length === 0) return;
-    var mesaj = "Mwen ta renmen kòmande:\n";
-    panye.forEach(function(i) { mesaj += "- " + i.non + " ($" + i.pri + ")\n"; });
-    window.open("https://wa.me/50937860226?text=" + encodeURIComponent(mesaj));
+    var panyen = JSON.parse(localStorage.getItem('panyen')) || [];
+    if (panyen.length === 0) return alert("Panye w la vid!");
+    
+    // Nou deklare emoji yo kòm varyab pou asire yo vwayaje byen
+    var chèk = "\u2705"; // ✅
+    var liy = "\u2501";  // ━
+    var panyenEmoji = "\u203C"; // ‼ oswa sèvi ak yon senp zetwal *
+    var flèch = "\u2570\u2500\u25B6"; // ╰─▶
+    
+    var mesaj = chèk + "LÒD KONFIMASYON HAIZONE MULTI-SERVICES " + chèk + "\n";
+    mesaj += "━━━━━━━━━━━━━━━━━━━\n\n";
+    
+    var total = 0;
+    
+    panyen.forEach(function(i) {
+        var kanti = i.kantite || 1;
+        var priLiy = parseFloat(i.pri) * kanti;
+        
+        mesaj += "* " + i.non.toUpperCase() + "\n";
+        mesaj += "  " + flèch + " Kantite: " + kanti + " - Pri: $" + priLiy.toFixed(0) + "\n";
+        
+        total += priLiy;
+    });
+    
+    mesaj += "\n━━━━━━━━━━━━━━━━━━━\n";
+    mesaj += "TOTAL POU TOUT ATIK YO: $" + total.toFixed(0) + " USD\n";
+    mesaj += "━━━━━━━━━━━━━━━━━━━\n\n";
+    mesaj += "Haizone Multi-Services/ JHIMMY EDVAR";
+    
+    var nimewo = "50937860226";
+    // Nou itilize encodeURIComponent sou tout mesaj la nèt
+    var url = "https://wa.me/" + nimewo + "?text=" + encodeURIComponent(mesaj);
+    window.open(url);
 }
 
-// LANSE
-montrePwodwi();
-updateBadge();
 
-function ajouteNanPanye(non, pri) {
-    // 1. Pran sa k te deja nan panye a
-    var panye = JSON.parse(localStorage.getItem('panye')) || [];
-    
-    // 2. Ajoute nouvo pwodwi a
-    panye.push({ non: non, pri: pri });
-    
-    // 3. Sove l tounen nan memwa a
-    localStorage.setItem('panye', JSON.stringify(panye));
-    
-    // 4. Mizajou ti nimewo ki sou panye a (Badge la)
-    updateBadge();
-    
-    // 5. Bay yon ti mesaj konfimasyon
-    alert(non + " ajoute nan panye w!");
-}
 
+
+// Mete fonksyon sa a anba nèt nan script.js ou
 window.likePwodwi = function(id) {
-    let keElem = document.getElementById('ke-' + id);
-    let countElem = document.getElementById('count-' + id);
-    let currentLikes = parseInt(countElem.innerText) || 0;
+    const keElem = document.getElementById('ke-' + id);
+    const countElem = document.getElementById('count-' + id);
+    const pwodwiRef = ref(db, 'lisPwodwi/' + id + '/likes');
     
-    // 1. Nou tcheke si moun nan poko like li (IF la obligatwa)
-    if (!keElem.classList.contains('active')) {
-        // Mete l wouj sou ekran an
-        keElem.classList.add('active');
-        keElem.style.color = '#ff4d4d'; 
-        let nouvoChif = currentLikes + 1;
-        countElem.innerText = nouvoChif;
+    // Tcheke nan memwa telefòn lan si moun nan te deja Like
+    const teLike = localStorage.getItem('like-' + id);
 
-        // Sere nan memwa telefòn nan
-        localStorage.setItem('like-' + id, 'wi');
-
-        // Voye l nan Firebase (Koneksyon an nèt)
-        update(ref(db, 'lisPwodwi/' + id), { 
-            likes: nouvoChif 
-        }).catch(err => console.error("Erè Firebase:", err));
+    if (!teLike) {
+        // --- MOUN NAN POTKO LIKE: N ap ajoute 1 ---
+        runTransaction(pwodwiRef, (currentLikes) => {
+            return (currentLikes || 0) + 1;
+        }).then(() => {
+            localStorage.setItem('like-' + id, 'wi'); // Sove nan memwa
+            if (keElem) keElem.style.color = '#ff4d4d'; // Kè a vin wouj
+        }).catch((err) => console.error("Firebase Like Error:", err));
 
     } else {
-        // 2. Si l vle retire like la
-        keElem.classList.remove('active');
-        keElem.style.color = '#666'; 
-        let nouvoChif = currentLikes > 0 ? currentLikes - 1 : 0;
-        countElem.innerText = nouvoChif;
-        
-        localStorage.removeItem('like-' + id);
-        
-        update(ref(db, 'lisPwodwi/' + id), { 
-            likes: nouvoChif 
-        });
+        // --- MOUN NAN TE DEJA LIKE: N ap retire 1 ---
+        runTransaction(pwodwiRef, (currentLikes) => {
+            return Math.max(0, (currentLikes || 0) - 1); // Pa janm desann pi ba pase 0
+        }).then(() => {
+            localStorage.removeItem('like-' + id); // Retire nan memwa
+            if (keElem) keElem.style.color = '#666'; // Kè a tounen gri
+        }).catch((err) => console.error("Firebase Unlike Error:", err));
     }
 };
+
+
+// Sa a debloke bouton an pou l ka klike
+window.ouvriPanyen = ouvriPanyen;
+window.fèmenPanyen = fèmenPanyen;
+window.retireAtik = retireAtik;
+window.voyeWhatsAppPro = voyeWhatsAppPro;
