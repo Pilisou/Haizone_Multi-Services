@@ -62,9 +62,14 @@ function montrePwodwi() {
         for (var i = 0; i < 6; i++) { skeletons += '<div class="skeleton-card"></div>'; }
         bwat.innerHTML = skeletons;
     } else {
-        // 2. CACHE: Si nou gen done, afiche yo IEDYATMAN
+        // 2. CACHE: Afiche yo IEDYATMAN
         desinePwodwiHTML(JSON.parse(kach), bwat);
-        restoreScroll(); 
+        
+        // AJOUTE SA ISIT LA POU L TOUNEN ALA SEGOND
+        const pos = localStorage.getItem('scrollPos');
+        if (pos) {
+            window.scrollTo(0, parseInt(pos));
+        }
     }
 
     // 3. FIREBASE: Konekte nan background pou rale sa k nèf
@@ -120,20 +125,28 @@ let koulèKè = teLike ? '#ff4d4d' : '#666';
     bwat.innerHTML = kontni;
 }
 
-// --- KONEKSYON PAJ PWODWI AK MEMWA SCROLL ---
 window.louvriModal = (id) => {
-    localStorage.setItem('scrollPos', window.scrollY); // Sove pozisyon an
-    window.location.href = 'pwodwi.html?id=' + id;     // Pati nan paj la
+    // Nou itilize Math.floor pou asire n se yon chif won n ap sove
+    const koteMwenYe = Math.floor(window.pageYOffset || document.documentElement.scrollTop || window.scrollY);
+    localStorage.setItem('scrollPos', koteMwenYe); 
+    
+    console.log("Mwen sove pozisyon sa a anvan m ale:", koteMwenYe); // Pou n verifye nan console la
+    window.location.href = 'pwodwi.html?id=' + id;
 };
 
 function restoreScroll() {
-    var pos = localStorage.getItem('scrollPos');
-    if (pos) {
-        window.scrollTo(0, parseInt(pos));
-        // Nou pa efase l isit la pou si moun nan fè reload paj la li toujou la
+    const pos = localStorage.getItem('scrollPos');
+    if (pos && pos !== "0") {
+        // Yon ti delè tou piti (50ms) sifi kounye a
+        setTimeout(() => {
+            window.scrollTo({
+                top: parseInt(pos),
+                behavior: 'instant' 
+            });
+            localStorage.removeItem('scrollPos'); // Efase l apre sa nèt
+        }, 5); 
     }
 }
-
 // LANSE PWOGRAM NAN
 montrePwodwi();
 
@@ -209,10 +222,7 @@ function retireAtik(index) {
 updateBadge();
 
 
-// 5. sa ki voye nan paj ki moutre non non pwodwi ak enfo yo
-window.louvriModal = (id) => {
-    window.location.href = 'pwodwi.html?id=' + id;
-};
+
 // 6. FÈMEN (MATCH AK NON FONKSYON KI NAN HTML LA)
 function fèmènModal() { document.getElementById('modal-pwodwi').style.display = 'none'; }
 function fèmenPanyen() { document.getElementById('modal-panyen').style.display = 'none'; }
