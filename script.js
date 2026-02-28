@@ -120,6 +120,7 @@ let koulèKè = teLike ? '#ff4d4d' : '#666';
                 '<span class="ti-ke" id="ke-' + p.id + '" style="color:' + koulèKè + '">❤</span>' +
                 '<span class="chif-like" id="count-' + p.id + '">' + (p.likes || 0) + '</span>' +
             '</div>' +
+            '<div class="p-rating">★ ★ ★ ★ ★ <span style="color:#8E8E93; font-size:0.7rem;">5.0</span></div>'+
         '</div>';
     });
     bwat.innerHTML = kontni;
@@ -293,6 +294,83 @@ window.likePwodwi = function(id) {
             if (keElem) keElem.style.color = '#666'; // Kè a tounen gri
         }).catch((err) => console.error("Firebase Unlike Error:", err));
     }
+};
+
+
+// 1. FONKSYON POU OUVRI/FÈMEN TI RIDO YO (ACCORDION)
+window.toggleSub = function(id) {
+    const el = document.getElementById(id);
+    const toutSub = document.querySelectorAll('.sub-menu');
+    const trigger = el.parentElement.querySelector('.menu-trigger');
+    const toutTriggers = document.querySelectorAll('.menu-trigger');
+    
+    // Si l te deja ouvri, nou jis fèmen l
+    if (el.classList.contains('open')) {
+        el.classList.remove('open');
+        trigger.classList.remove('active-trigger');
+        return;
+    }
+
+    // Fèmen tout lòt yo pou sa rete klasik
+    toutSub.forEach(sub => sub.classList.remove('open'));
+    toutTriggers.forEach(trig => trig.classList.remove('active-trigger'));
+    
+    // Ouvri sa nou klike a
+    el.classList.add('open');
+    trigger.classList.add('active-trigger');
+};
+
+// 2. MOTÈ FILTRE A (Pou rale pwodwi nan Kach la)
+window.filtrePwodwi = function(moKle) {
+    const bwat = document.getElementById('lis-pwodwi-dinamik');
+    const kachRaw = localStorage.getItem('lisKach');
+    
+    if (!kachRaw) {
+        console.log("Kach la vid baz!");
+        return;
+    }
+
+    const kach = JSON.parse(kachRaw);
+    const doneFiltre = {};
+
+    Object.keys(kach).forEach(key => {
+        const p = kach[key];
+        // Nou tcheke si mo a nan Non, Kategori, oswa Tags
+        const nonMatches = p.non.toLowerCase().includes(moKle.toLowerCase());
+        const katMatches = p.kategori && p.kategori.toLowerCase().includes(moKle.toLowerCase());
+        
+        if (nonMatches || katMatches) {
+            doneFiltre[key] = p;
+        }
+    });
+
+    // Sèvi ak fonksyon ki desine a ki nan script ou a deja
+    if (typeof desinePwodwiHTML === "function") {
+        desinePwodwiHTML(doneFiltre, bwat);
+    }
+    
+    // Fèmen sidebar a otomatikman apre klik la
+    fèmenSidebar();
+};
+
+// 3. FONKSYON POU FÈMEN SIDEBAR A NÈT
+window.fèmenSidebar = function() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay-sidebar');
+    if(sidebar) sidebar.classList.remove('active');
+    if(overlay) overlay.style.display = 'none';
+};
+
+window.montreToutPwodwi = function() {
+    const bwat = document.getElementById('lis-pwodwi-dinamik');
+    const kachRaw = localStorage.getItem('lisKach');
+    
+    if (kachRaw) {
+        const kach = JSON.parse(kachRaw);
+        desinePwodwiHTML(kach, bwat); // Li remete tout pwodwi yo nèt
+    }
+    
+    fèmenSidebar(); // Li fèmen meni an pou kliyan an ka wè rezilta a
 };
 
 
