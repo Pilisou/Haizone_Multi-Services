@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="hc">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Haizone - Multi-Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --bg: #ffffff; --card-bg: #fdfdfd; --text-main: #1a1a1a; --text-muted: #8e8e93; --accent: #00c566; }
+        body { background-color: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; color: var(--text-main); }
+
+        /* HEADER & SEARCH (Jan l ye nan foto 1 an) */
+        header { padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: white; z-index: 100; }
+
+        .logo {
+            height: 40px;
+        }
+
+
+
+        .search-bar { background: #f2f2f7; margin: 0 20px; padding: 12px 15px; border-radius: 12px; display: flex; align-items: center; gap: 10px; color: var(--text-muted); }
+        
+        /* BANNER (Vèt la ki nan foto a) */
+        .banner { background: #00c566; margin: 15px 20px; padding: 20px; border-radius: 15px; color: rgba(255, 255, 255, 0.582); position: relative; overflow: hidden; }
+
+        .banner h2 { margin: 0; font-size: 1.2rem; }
+        
+        /* GRID PWODWI (2 kolòn pafè) */
+        #lis-pwodwi-dinamik { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 20px; 
+            padding: 20px; 
+        }
+
+        /* CARD REPRODWI (Netwaye san ti foto) */
+        .pwodwi-card { 
+            background: var(--card-bg); 
+            border-radius: 0px; /* Foto a montre yon stil trè plat/pwòp */
+            position: relative; 
+            transition: 0.3s;
+        }
+
+@media (max-width: 767px) {
+     #lis-pwodwi-dinamik {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        -webkit-tap-highlight-color: transparent; /* Retire ti kare ble lè w klike a */
+    }
+
+    /* Lè moun nan poze dwèt li sou kat la */
+    #lis-pwodwi-dinamik:active {
+        transform: scale(0.92) rotate(1deg) !important; /* Li rasi epi l vire yon ti kras */
+        box-shadow: 0 0 20px rgba(0, 197, 102, 0.3) !important; /* Yon ti Glow vèt Haizone */
+        border: 1px solid rgba(0, 197, 102, 0.4);
+        filter: brightness(0.95);
+    }
+}
+
+
+@media (min-width: 1024px) {
+            #lis-pwodwi-dinamik{
+                grid-template-columns: repeat(4, 1fr);
+                margin: 0 auto;
+                max-width: 1200px;
+            }
+        }
+
+
+
+         .pwodwi-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+
+        .foto-prensipal { 
+            width: 100%; 
+            aspect-ratio: 1/1; 
+            object-fit: contain; 
+            background: #f8f8f8; 
+            border-radius: 12px; 
+        }
+
+        /* ENFOS ANBA FOTO A */
+        .enfos-pwodwi { padding: 10px 0; position: relative; }
+        .non-pwodwi { font-size: 0.85rem; font-weight: 600; margin: 0; color: #333; }
+        .pri-seksyon { margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+        .pri-rabe { font-weight: 700; font-size: 1rem; }
+        .pri-original { color: var(--text-muted); text-decoration: line-through; font-size: 0.75rem; }
+
+        /* KÈ ANBA ADWAT (Sa w mande a) */
+        .kontene-like { 
+            position: absolute; 
+            bottom: 10px; 
+            right: 0; 
+            display: flex; 
+            align-items: center; 
+            gap: 4px;
+            cursor: pointer;
+        }
+        .ti-ke { font-size: 1.1rem; }
+        .chif-like { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
+
+        /* RETIRE TI FOTO YO */
+        .ti-foto-galeri, .ti-flech-v, .deskrip-overlay { display: none !important; }
+/* DESIGN SIDEBAR A */
+#sidebar { 
+    position: fixed; left: -100%; top: 0; width: 55%; height: 100%; 
+    background: white; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+}
+#sidebar.active { left: 0; }
+
+/* STYLE POU BOUTON PRENSIPAL YO */
+.menu-trigger {
+    padding: 18px 20px; font-weight: 500; display: flex; justify-content: space-between;
+    align-items: center; border-bottom: 1px solid #f2f2f7; cursor: pointer; color: #1a1a1a;
+    font-size: 1rem;
+}
+
+/* KACHE SOUTIT YO PA DEFO */
+.sub-menu {
+    max-height: 0; overflow: hidden; transition: 0.3s ease-in-out; background: #f9f9fb;
+}
+
+/* LÈ YO OUVRI */
+.sub-menu.open { max-height: 600px; padding: 5px 0; border-bottom: 1px solid #eee; }
+
+/* STYLE POU ATIK YO KI ANNDAN YO */
+.sub-item {
+    padding: 14px 40px; font-size: 0.95rem; color: #555; border-bottom: 1px dashed #efefef;
+    cursor: pointer; transition: 0.2s;
+}
+.sub-item:active { background: #e8f5e9; color: #00c566; padding-left: 45px; }
+
+/* TI FLÈCH YO (V) */
+.ti-v { font-size: 0.8rem; color: #2fb60d; transition: 0.3s; }
+.menu-trigger.active-trigger .ti-v { transform: rotate(180deg); color: #00c566; }
+        
+
+        .p-rating{
+            color: #eb6662;
+        }
+
+/* DESIGN SLIDER SÈVIS YO */
+.sevis-slider {
+    display: flex;
+    gap: 12px; /* Ti espas ant ikòn yo */
+    overflow-x: auto; /* Pou l ka glise sou kote */
+    padding: 10px 15px;
+    scrollbar-width: none; /* Kache bar la sou Firefox */
+    -ms-overflow-style: none; /* Kache l sou IE/Edge */
+}
+
+/* Kache bar anba a sou Chrome ak Safari */
+.sevis-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.sevis-item {
+    flex: 0 0 auto;
+    text-align: center;
+    cursor: pointer;
+    width: 62px; /* Lajè chak blòk */
+}
+
+.sevis-icon {
+    width: 50px; /* Lajè ikòn nan (Mwen fè l piti pou l pa gwo) */
+    height: 50px; /* Wotè ikòn nan */
+    border-radius: 14px; /* Fòm kare a ki yon ti jan wonn nan kwen yo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 5px; /* Santre ikòn nan epi mete espas ak tèks la */
+    font-size: 1.2rem; /* Gwosè ikòn nan menm */
+    transition: transform 0.2s ease;
+}
+
+.sevis-item span {
+    font-size: 0.65rem; /* Ti tèks byen fen */
+    font-weight: 700;
+    color: #555;
+    display: block;
+    white-space: nowrap; /* Pou tèks la pa janm koupe fè 2 liy */
+}
+
+/* Ti animasyon lè w teke l ak dwèt */
+.sevis-item:active .sevis-icon {
+    transform: scale(0.9);
+}
+        
+    </style>
+</head>
+<body>
+
+    <header style="padding: 10px 20px; background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-bars" id="btn-tout" style="font-size: 1.3rem; color: #333; cursor: pointer;"></i>
+            <div>
+                <span style="display: block; font-size: 0.7rem; color: #888; font-weight: 500;">Byenvini nan</span>
+                <span style="font-size: 1rem; font-weight: 800; color: #00c566; letter-spacing: -0.5px;">HAIZONE</span>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div onclick="alert('Lokalizasyon Haizone: Pòtoprens, Ayiti')" style="cursor: pointer;">
+                <i class="fas fa-map-marker-alt" style="font-size: 1.3rem; color: #333;"></i>
+            </div>
+
+            <div style="position: relative; cursor: pointer;" onclick="ouvriPanyen()">
+                <div style="background: #FFD700; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <i class="fas fa-shopping-basket" style="font-size: 1.2rem; color: #333;"></i>
+                </div>
+                <span id="panye-count" style="position: absolute; top: -2px; right: -2px; background: #00c566; color: #fff; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: 700; border: 2px solid #fff;">0</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <span>Search</span>
+    </div>
+
+    <div class="sevis-slider">
+    <div class="sevis-item" onclick="filtrePwodwi('iphone')">
+        <div class="sevis-icon" style="background: #e8f5e9;"><i class="fas fa-mobile-alt" style="color: #00c566;"></i></div>
+        <span>Iphone</span>
+    </div>
+    <div class="sevis-item" onclick="filtrePwodwi('Starlink')">
+        <div class="sevis-icon" style="background: #e3f2fd;"><i class="fas fa-satellite-dish" style="color: #2196f3;"></i></div>
+        <span>Starlink</span>
+    </div>
+    <div class="sevis-item" onclick="filtrePwodwi('enprimant')">
+        <div class="sevis-icon" style="background: #fff3e0;"><i class="fa-solid fa-print" style="color: #d38714;"></i></div>
+        <span>Enprimant</span>
+    </div>
+    <div class="sevis-item" onclick="filtrePwodwi('Motorola')">
+        <div class="sevis-icon" style="background: #f3e5f5;"><i class="fas fa-mobile-alt" style="color: #27b045;"></i></div>
+        <span>Motorola</span>
+    </div>
+    <div class="sevis-item" onclick="filtrePwodwi('Lank')">
+        <div class="sevis-icon" style="background: #f3e5f5;"><i class="fa-solid fa-droplet" style="color: #27b045;"></i></div>
+        <span>Lank enpri...</span>
+    </div>
+    <div class="sevis-item" onclick="filtrePwodwi('Linèt')">
+        <div class="sevis-icon" style="background: #f3e5f5;"><i class="fa-solid fa-glasses" style="color: #27b045;"></i></div>
+        <span>Linèt</span>
+    </div>
+</div>
+
+    <div class="banner">
+        <p style="margin:0; font-size:0.8rem; opacity:0.9;">Tout pri kase jiska 50% sou Haizone.</p>
+        <h2>-10% RABÈ Likidasyon!</h2>
+        <span style="position:absolute; right:20px; top:20px; font-weight:bold;">HAIZONE</span>
+    </div>
+
+    <h3 style="margin: 0 20px; font-size: 1.1rem;">Top Pwodwi</h3>
+
+    <main id="lis-pwodwi-dinamik"></main>
+
+    <div id="overlay-sidebar" onclick="fèmenSidebar()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; z-index:1500;"></div>
+
+<div id="sidebar">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding: 20px; border-bottom: 2px solid #f0f0f0;">
+        <h4 style="font-size:1.0rem; margin:0; font-weight:700;
+        color: #8e8e93;
+        ">Nou se Haizone Multi-Services!</h4>
+        <i class="fas fa-times" id="btn-close" style="font-size:1.5rem; cursor:pointer;" onclick="fèmenSidebar()"></i>
+    </div>
+
+    <div class="menu-trigger no-arrow" onclick="montreToutPwodwi()" style="color: #00c566; font-weight: 700;">
+    <span>Gade Tout</span> <i class="fas fa-th-large"></i>
+</div>
+
+    <div class="menu-scroll">
+        <div class="menu-item">
+            <div class="menu-trigger" onclick="toggleSub('sub-tel')">
+                <span>Telefòn</span> <i class="fas fa-chevron-down ti-v"></i>
+            </div>
+            <div class="sub-menu" id="sub-tel">
+                <div class="sub-item" onclick="filtrePwodwi('Iphone')">Iphone</div>
+                <div class="sub-item" onclick="filtrePwodwi('Samsung')">Samsung</div>
+                <div class="sub-item" onclick="filtrePwodwi('Techno')">Techno</div>
+                 <div class="sub-item" onclick="filtrePwodwi('Techno')">Motorola</div>
+                  <div class="sub-item" onclick="filtrePwodwi('Techno')">ZTE</div>
+                   <div class="sub-item" onclick="filtrePwodwi('Techno')">Ti a bouton yo</div>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <div class="menu-trigger" onclick="toggleSub('sub-kon')">
+                <span>Koneksyon</span> <i class="fas fa-chevron-down ti-v"></i>
+            </div>
+            <div class="sub-menu" id="sub-kon">
+                <div class="sub-item" onclick="filtrePwodwi('Starlink')">Starlink</div>
+                <div class="sub-item" onclick="filtrePwodwi('Tp-link')">Woutè Tp-link</div>
+                <div class="sub-item" onclick="filtrePwodwi('Omada')">Omada controller</div>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <div class="menu-trigger" onclick="toggleSub('sub-aks')">
+                <span>Akseswa</span> <i class="fas fa-chevron-down ti-v"></i>
+            </div>
+            <div class="sub-menu" id="sub-aks">
+                <div class="sub-item" onclick="filtrePwodwi('Linèt')">Linèt</div>
+                <div class="sub-item" onclick="filtrePwodwi('Chajè')">Chajè</div>
+                <div class="sub-item" onclick="filtrePwodwi('Po telefòn')">Po telefòn</div>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <div class="menu-trigger" onclick="toggleSub('sub-biwo')">
+                <span>Biwo</span> <i class="fas fa-chevron-down ti-v"></i>
+            </div>
+            <div class="sub-menu" id="sub-biwo">
+                <div class="sub-item" onclick="filtrePwodwi('Imprimante')">Imprimante</div>
+                <div class="sub-item" onclick="filtrePwodwi('Ank')">Ank</div>
+                <div class="sub-item" onclick="filtrePwodwi('Fèy')">Fèy blanch</div>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <div class="menu-trigger" onclick="toggleSub('sub-sevis')">
+                <span>Lòt Sèvis</span> <i class="fas fa-chevron-down ti-v"></i>
+            </div>
+            <div class="sub-menu" id="sub-sevis">
+                <div class="sub-item" onclick="filtrePwodwi('Paspò')">Sèvis paspò</div>
+                <div class="sub-item" onclick="filtrePwodwi('Fotokopi')">Sèvis fotokopi</div>
+            </div>
+        </div>
+
+        <div class="menu-trigger no-arrow" onclick="window.location.href='about.html'">Nou se...</div>
+        <div class="menu-trigger no-arrow" onclick="window.location.href='contact.html'">Kontak</div>
+    </div>
+</div>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
